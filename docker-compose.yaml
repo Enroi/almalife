@@ -1,0 +1,51 @@
+name: almalife
+
+services:
+
+  spark-master:
+    build: spark/.
+    environment:
+      - SPARK_PUBLIC_DNS=spark-master
+      - SPARK_LOCAL_HOSTNAME=spark-master
+      - SPARK_MASTER_HOST=spark-master
+      - SPARK_MASTER_PORT=7077
+    command: [
+        "/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master"
+    ]
+
+  spark-worker:
+    build: spark/.
+    environment:
+      - SPARK_PUBLIC_DNS=spark-worker
+      - SPARK_LOCAL_HOSTNAME=spark-worker
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=2g
+    command: [
+      "/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077"
+    ]
+    depends_on:
+      - spark-master
+
+  spark-connect:
+    build: spark/.
+    environment:
+      - SPARK_PUBLIC_DNS=spark-connect
+      - SPARK_LOCAL_HOSTNAME=spark-connect
+    ports:
+      - "15002:15002"
+      - "4040:4040"
+    command: [
+      "/opt/spark/bin/spark-submit", "--class", "org.apache.spark.sql.connect.service.SparkConnectServer"
+    ]
+    depends_on:
+      - spark-master
+
+  postgres:
+    restart: no
+    image: postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASS:-Bv3cXz5}
+      POSTGRES_USER: ${DB_USER:-almalife}
+      POSTGRES_DB: ${DB_NAME:-almalife}
