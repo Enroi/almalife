@@ -66,8 +66,7 @@ services:
     ports:
       - "8088:8088"
     environment:
-      - SUPERSET_SECRET_KEY=aX9mK2pQ7vR4tY8nB3wZ6cL1
-      - SUPERSET_SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://${PG_DB_USER}:${PG_DB_PASS}@postgres:5432/superset
+      SUPERSET_SECRET_KEY: aX9mK2pQ7vR4tY8nB3wZ6cL1
     command: >
       sh -c "
       superset db upgrade &&
