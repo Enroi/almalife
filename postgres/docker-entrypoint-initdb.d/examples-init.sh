@@ -8,5 +8,5 @@ echo "${PG_DB_USER}"
 set -e
 
 psql -v ON_ERROR_STOP=1 --username "${POSTGRES_USER}" --dbname "${PG_DB_NAME}" <<-EOSQL
-  CREATE DATABASE ${EXAMPLES_DB};
+  CREATE DATABASE superset;
 EOSQL

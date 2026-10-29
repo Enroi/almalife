@@ -1,4 +1,2 @@
 /.vscode
-api_server/.env
 spark/hadoop-3.4.2.tar.gz
-.env

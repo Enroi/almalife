@@ -49,10 +49,34 @@ services:
       POSTGRES_PASSWORD: ${PG_DB_PASS}
       POSTGRES_USER: ${PG_DB_USER}
       POSTGRES_DB: ${PG_DB_NAME}
-      EXAMPLES_DB: ${EXAMPLES_DB:-examples}
     volumes:
       - db_home:/var/lib/postgresql
       - ./postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_DB_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  superset:
+    image: apache/superset:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8088:8088"
+    environment:
+      - SUPERSET_SECRET_KEY=aX9mK2pQ7vR4tY8nB3wZ6cL1
+      - SUPERSET_SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://${PG_DB_USER}:${PG_DB_PASS}@postgres:5432/superset
+    command: >
+      sh -c "
+      superset db upgrade &&
+      superset fab create-admin --username admin --firstname Admin --lastname User --email admin@example.com --password admin || true &&
+      superset init &&
+      superset run -h 0.0.0.0 -p 8088
+      "
+    volumes:
+      - superset_home:/app/superset_home
 
 volumes:
   superset_home:
