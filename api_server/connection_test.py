@@ -1,5 +1,12 @@
 # noinspection PyPackageRequirements
 
+"""Скрипт для начальной проверки доступности Apache Spark.
+
+При запуске должна быть указана переменная окружения SPARK_REMOTE,
+указывающая на сервер, с которым нужно работать скрипту.
+Например: SPARK_REMOTE=sc://localhost:15002
+"""
+
 from pyspark.sql import SparkSession, Row
 from datetime import datetime, date
 
@@ -13,16 +20,3 @@ df = spark.createDataFrame([
 
 df.show()
 df.printSchema()
-
-"""
-jdbc_df = spark.read \
-    .format("jdbc") \
-    .option("url", "jdbc:postgresql://172.22.130.235:31105/calendars_db") \
-    .option("dbtable", "public.calendar_days") \
-    .option("user", "calendar_service_user") \
-    .option("password", "o2IEVQVrvWuVvcDpVBkW") \
-    .option("driver", "org.postgresql.Driver") \
-    .load()
-
-jdbc_df.show(10)
-"""
