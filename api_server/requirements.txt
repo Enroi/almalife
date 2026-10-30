@@ -4,3 +4,5 @@ pandas
 grpcio
 grpcio-status
 zstandard
+uvicorn
+fastapi[standard]
