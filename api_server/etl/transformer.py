@@ -4,7 +4,7 @@ import yaml
 import logging
 import os
 import re
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import DataFrame, SparkSession, functions as F
 
 
 logging.basicConfig(
@@ -17,8 +17,14 @@ def replacer(match) -> str:
     var_name = match.group(1)
     return os.getenv(var_name, f"${{{var_name}}}")
 
+def column_modifications(column_mod_yaml_block: dict, df: DataFrame):
+    for column_name, modification in column_mod_yaml_block.items():
+        df = df.withColumn(column_name, F.expr(str(modification)))
+    return df
+
 def load_from_source(extract_yaml_block: dict, spark: SparkSession) -> DataFrame:
     options: dict = extract_yaml_block.get('options') or {}
+    
     df: DataFrame = (
         spark
         .read
@@ -26,11 +32,37 @@ def load_from_source(extract_yaml_block: dict, spark: SparkSession) -> DataFrame
         .format(extract_yaml_block['format'])
         .load(extract_yaml_block['source'])
     )
+    
+    if 'select' in extract_yaml_block:
+        raw_select = extract_yaml_block["select"]
+        select = [x.strip() for x in raw_select.split(",")]
+        df = df.selectExpr(select)
+    
+    print_schema = extract_yaml_block.get("print_schema", False)
+    if str(print_schema).lower() == 'true':
+        df.printSchema()
+
     if 'show_loaded' in extract_yaml_block:
         df.show(extract_yaml_block['show_loaded'])
+
+    if 'drop_columns' in extract_yaml_block:
+        drop_columns: list = extract_yaml_block['drop_columns']
+        for column in drop_columns:
+            df = df.drop(column)
+    
+    if 'column_modifications' in extract_yaml_block:
+        df = column_modifications(extract_yaml_block['column_modifications'], df)
+    
     return df
 
 def save_to_target(df: DataFrame, load_yaml_block: dict):
+    print_schema = load_yaml_block.get("print_schema", False)
+    if str(print_schema).lower() == 'true':
+        df.printSchema()
+
+    if 'show_rows_before_save' in load_yaml_block:
+        df.show(load_yaml_block['show_rows_before_save'])
+
     save_format: str = load_yaml_block['format']
     target_name: str = load_yaml_block['target_name']
     write_mode: str = load_yaml_block['write_mode']
@@ -66,6 +98,6 @@ def transform(yaml_config: str) -> str:
 
 
 if __name__ == '__main__':
-    with open(r"api_server\etl\configs\test_csv1.yaml", "r") as file:
+    with open(r"api_server\etl\configs\base_example.yaml", "r") as file:
         yaml_content: str = file.read()
         transform(yaml_content)
