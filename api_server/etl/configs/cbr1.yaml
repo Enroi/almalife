@@ -1,0 +1,9 @@
+extract:
+  format: jdbc
+  options:
+    - url: ${MARKET_DATA_DB_ADDRESS_OLD_FULL}
+    - user: "!ENV MARKET_DATA_USER_OLD"
+    - password: "!ENV MARKET_DATA_PASSWORD_OLD"
+
+load:
+  format: json

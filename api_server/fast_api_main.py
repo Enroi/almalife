@@ -24,6 +24,7 @@ app = FastAPI(
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(module)s - %(funcName)s - %(thread)d - %(message)s',
                     )
+
 @app.get(path = "/", response_class = RedirectResponse)
 async def root():
     return "/docs"

@@ -2,6 +2,9 @@ FROM apache/spark:4.2.0-scala2.13-java25-python3-r-ubuntu
 
 USER root
 
+RUN apt-get update && \
+    apt-get install -y iputils-ping curl
+
 ENV PATH                $PATH:$SPARK_HOME/bin
 
 ENV HADOOP_VERSION      3.4.2

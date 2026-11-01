@@ -12,6 +12,9 @@ services:
     command: [
         "/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master"
     ]
+    volumes:
+      - ./test_csvs:/opt/spark/work-dir/test_csvs/
+      - ./test_results:/opt/spark/work-dir/test_results/
 
   spark-worker:
     build: spark/.
@@ -25,6 +28,9 @@ services:
     ]
     depends_on:
       - spark-master
+    volumes:
+      - ./test_csvs:/opt/spark/work-dir/test_csvs/
+      - ./test_results:/opt/spark/work-dir/test_results/
 
   spark-connect:
     build: spark/.
@@ -39,6 +45,9 @@ services:
     ]
     depends_on:
       - spark-master
+    volumes:
+      - ./test_csvs:/opt/spark/work-dir/test_csvs/
+      - ./test_results:/opt/spark/work-dir/test_results/
 
   postgres:
     restart: no
@@ -76,6 +85,7 @@ services:
       "
     volumes:
       - superset_home:/app/superset_home
+      - ./test_csvs:/opt/spark/work-dir/test_csvs/
 
 volumes:
   superset_home:

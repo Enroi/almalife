@@ -1,0 +1,16 @@
+extract:
+  format: "csv"
+  source: "test_csvs/data_1/deal.csv"
+  options:
+    inferSchema: "true"
+    encoding: "UTF-8"
+    header: "true"
+    sep: ";"
+  show_loaded: 10
+
+load:
+  format: json
+  write_mode: overwrite
+  target_name: test_results/test_cvs1
+  options:
+    compression: "gzip"
