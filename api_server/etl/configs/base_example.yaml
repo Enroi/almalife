@@ -23,6 +23,10 @@ extract: # Описывает этап извлечения данных
     - deal_currency
   column_modifications:
     new_column_name: to_date('2026-01-01') # Пример создания новой колонки с помощью функций Apache Spark
+  business_modification: 
+    module: "etl.business_methods.worker_module"
+    class: Worker
+    method: do_work
 
 load: # Описывает этап сохранения данных
   format: json

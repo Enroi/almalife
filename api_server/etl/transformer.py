@@ -5,7 +5,7 @@ import logging
 import os
 import re
 from pyspark.sql import DataFrame, SparkSession, functions as F
-
+import importlib
 
 logging.basicConfig(
     level=logging.INFO,
@@ -99,15 +99,20 @@ def transform(yaml_config: str) -> str:
     spark: SparkSession = SparkSession.builder.create()
     try:
         df: DataFrame = load_from_source(extract_yaml_block, spark)
+        
+        if 'business_modification' in extract_yaml_block:
+            module_name = extract_yaml_block['business_modification']['module']
+            class_name = extract_yaml_block['business_modification']['class']
+            method_name = extract_yaml_block['business_modification']['method']
+            
+            business_module = importlib.import_module(module_name)
+            cls = getattr(business_module, class_name)
+            obj = cls()
+            getattr(obj, method_name)(df)
+        
         save_to_target(df, load_yaml_block)
     finally:
         spark.stop()
     
     logging.info("finished work with config ")
     return "success"
-
-
-if __name__ == '__main__':
-    with open(r"api_server\etl\configs\xml_to_db.yaml", "r") as file:
-        yaml_content: str = file.read()
-        transform(yaml_content)
