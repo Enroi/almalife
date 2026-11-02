@@ -34,8 +34,7 @@ def load_from_source(extract_yaml_block: dict, spark: SparkSession) -> DataFrame
     )
     
     if 'select' in extract_yaml_block:
-        raw_select = extract_yaml_block["select"]
-        select = [x.strip() for x in raw_select.split(",")]
+        select = extract_yaml_block["select"]
         df = df.selectExpr(select)
     
     print_schema = extract_yaml_block.get("print_schema", False)
@@ -67,14 +66,25 @@ def save_to_target(df: DataFrame, load_yaml_block: dict):
     target_name: str = load_yaml_block['target_name']
     write_mode: str = load_yaml_block['write_mode']
     options: dict = load_yaml_block.get('options') or {}
-    (
-        df
-        .write
-        .mode(write_mode)
-        .options(**options)
-        .format(save_format)
-        .save(target_name)
-    )
+    match save_format:
+        case "jdbc":
+            (
+                df
+                .write
+                .mode(write_mode)
+                .options(**options)
+                .format(save_format)
+                .save()                
+            )
+        case _:
+            (
+                df
+                .write
+                .mode(write_mode)
+                .options(**options)
+                .format(save_format)
+                .save(target_name)
+            )
 
 def transform(yaml_config: str) -> str:
     logging.info("started work with config")
@@ -98,6 +108,6 @@ def transform(yaml_config: str) -> str:
 
 
 if __name__ == '__main__':
-    with open(r"api_server\etl\configs\base_example.yaml", "r") as file:
+    with open(r"api_server\etl\configs\xml_to_db.yaml", "r") as file:
         yaml_content: str = file.read()
         transform(yaml_content)

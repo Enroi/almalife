@@ -13,7 +13,7 @@ services:
         "/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master"
     ]
     volumes:
-      - ./test_csvs:/opt/spark/work-dir/test_csvs/
+      - ./source_test_data:/opt/spark/work-dir/source_test_data/
       - ./test_results:/opt/spark/work-dir/test_results/
 
   spark-worker:
@@ -29,7 +29,7 @@ services:
     depends_on:
       - spark-master
     volumes:
-      - ./test_csvs:/opt/spark/work-dir/test_csvs/
+      - ./source_test_data:/opt/spark/work-dir/source_test_data/
       - ./test_results:/opt/spark/work-dir/test_results/
 
   spark-connect:
@@ -46,7 +46,7 @@ services:
     depends_on:
       - spark-master
     volumes:
-      - ./test_csvs:/opt/spark/work-dir/test_csvs/
+      - ./source_test_data:/opt/spark/work-dir/source_test_data/
       - ./test_results:/opt/spark/work-dir/test_results/
 
   postgres:
