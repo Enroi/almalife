@@ -24,6 +24,13 @@ extract: # Описывает этап извлечения данных
   column_modifications:
     new_column_name: to_date('2026-01-01') # Пример создания новой колонки с помощью функций Apache Spark
 
+business_modification: 
+  module: "etl.business_methods.worker_module"
+  class: Worker
+  method: do_work
+  parameters:
+    name_of_param: "any value of param"
+
 load: # Описывает этап сохранения данных
   format: json
   write_mode: overwrite
@@ -32,3 +39,12 @@ load: # Описывает этап сохранения данных
     compression: "gzip"
   show_rows_before_save: 10
   print_schema: true
+
+additional_sources: # Дополнительные источники данных, которые могут понадобится при работе бизнес модификаций данных (business_modification)
+  xml_source:
+    format: xml
+    source: "source_test_data/test_xmls/usd_currencies.xml"
+    options:
+      rowTag: Record
+      show_loaded: 10
+    print_schema: "true"
