@@ -67,7 +67,7 @@ services:
       retries: 10
 
   prisma-studio:
-    image: node:26-alpine
+    image: node:20-alpine
     working_dir: /app
     command: >
       sh -c "npm install -g prisma@7 && 
