@@ -1,5 +1,8 @@
 /.vscode
+/.venv
 spark/hadoop-3.4.2.tar.gz
 /api_server/.env
 **/__pycache__/*
 /test_results
+.env
+!*-example

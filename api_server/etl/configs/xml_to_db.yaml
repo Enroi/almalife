@@ -20,4 +20,7 @@ load:
   show_rows_before_save: 10
   print_schema: true
   options:
-    url: 
+    url: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+    dbtable: usd_currencies
+    user: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
