@@ -6,3 +6,4 @@ grpcio-status
 zstandard
 uvicorn
 fastapi[standard]
+python-dotenv

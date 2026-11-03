@@ -66,26 +66,13 @@ def save_to_target(df: DataFrame, load_yaml_block: dict):
     target_name: str = load_yaml_block['target_name']
     write_mode: str = load_yaml_block['write_mode']
     options: dict = load_yaml_block.get('options') or {}
-    match save_format:
-        case "jdbc":
-            (
-                df
-                .write
-                .mode(write_mode)
-                .options(**options)
-                .format(save_format)
-                .save()                
-            )
-        case _:
-            (
-                df
-                .write
-                .mode(write_mode)
-                .options(**options)
-                .format(save_format)
-                .save(target_name)
-            )
 
+    df  .write \
+        .mode(write_mode) \
+        .options(**options) \
+        .format(save_format) \
+        .save(target_name)
+    
 def transform(yaml_config: str) -> str:
     logging.info("started work with config")
 
@@ -108,6 +95,10 @@ def transform(yaml_config: str) -> str:
 
 
 if __name__ == '__main__':
+
+    from dotenv import load_dotenv
+    load_dotenv()
+
     with open(r"api_server\etl\configs\xml_to_db.yaml", "r") as file:
         yaml_content: str = file.read()
         transform(yaml_content)
