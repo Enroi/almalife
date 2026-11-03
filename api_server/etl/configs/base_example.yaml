@@ -1,6 +1,6 @@
 extract: # Описывает этап извлечения данных
   format: "csv" # 
-  source: "test_csvs/data_1/deal.csv"
+  source: "source_test_data/test_csvs/data_1/deal.csv"
   options:
     inferSchema: "true"
     encoding: "UTF-8"
@@ -9,11 +9,27 @@ extract: # Описывает этап извлечения данных
   show_loaded: 10
   print_schema: "true"
   # Строки ниже по сути описывают этап Transform в ETL-процессе
-  select: deal_number, contract_number, counterparty_id, product_type, portfolio_name, trader_name, deal_notional, deal_currency, nominal # Список колонок, которые нужно выбрать из источника
+  select: # Список колонок, которые нужно выбрать из источника
+    - deal_number
+    - contract_number
+    - counterparty_id
+    - product_type
+    - portfolio_name
+    - trader_name
+    - deal_notional
+    - deal_currency
+    - nominal 
   drop_columns: # После загрузки можно удалить "лишние" колонки
     - deal_currency
   column_modifications:
     new_column_name: to_date('2026-01-01') # Пример создания новой колонки с помощью функций Apache Spark
+
+business_modification: 
+  module: "etl.business_methods.worker_module"
+  class: Worker
+  method: do_work
+  parameters:
+    name_of_param: "any value of param"
 
 load: # Описывает этап сохранения данных
   format: json
@@ -23,3 +39,12 @@ load: # Описывает этап сохранения данных
     compression: "gzip"
   show_rows_before_save: 10
   print_schema: true
+
+additional_sources: # Дополнительные источники данных, которые могут понадобится при работе бизнес модификаций данных (business_modification)
+  xml_source:
+    format: xml
+    source: "source_test_data/test_xmls/usd_currencies.xml"
+    options:
+      rowTag: Record
+      show_loaded: 10
+    print_schema: "true"

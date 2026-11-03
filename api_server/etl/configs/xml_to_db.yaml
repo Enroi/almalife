@@ -1,0 +1,23 @@
+# Пример загрузки содержимого XML файла в базу данных Postgres
+# Файл создан по результату этого запроса https://www.cbr.ru/scripts/XML_dynamic.asp?date_req1=01.01.2020&date_req2=31.12.2026&VAL_NM_RQ=R01235
+
+extract: # Описывает этап извлечения данных
+  format: xml
+  source: "source_test_data/test_xmls/usd_currencies.xml"
+  options:
+    rowTag: Record
+    show_loaded: 10
+  print_schema: "true"
+  business_modification: 
+    module: "etl.business_methods.worker_module"
+    class: Worker
+    method: do_work
+
+load:
+  format: jdbc
+  write_mode: overwrite
+  target_name: null
+  show_rows_before_save: 10
+  print_schema: true
+  options:
+    url: 
