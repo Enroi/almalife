@@ -67,11 +67,11 @@ def save_to_target(df: DataFrame, load_yaml_block: dict):
     write_mode: str = load_yaml_block['write_mode']
     options: dict = load_yaml_block.get('options') or {}
 
-    df  .write \
-        .mode(write_mode) \
-        .options(**options) \
-        .format(save_format) \
-        .save(target_name)
+    (df .write
+        .mode(write_mode)
+        .options(**options)
+        .format(save_format)
+        .save(target_name))
     
 def transform(yaml_config: str) -> str:
     logging.info("started work with config")
