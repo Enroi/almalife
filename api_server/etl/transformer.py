@@ -100,10 +100,10 @@ def transform(yaml_config: str) -> str:
     try:
         df: DataFrame = load_from_source(extract_yaml_block, spark)
         
-        if 'business_modification' in extract_yaml_block:
-            module_name = extract_yaml_block['business_modification']['module']
-            class_name = extract_yaml_block['business_modification']['class']
-            method_name = extract_yaml_block['business_modification']['method']
+        if 'business_modification' in config_dict:
+            module_name = config_dict['business_modification']['module']
+            class_name = config_dict['business_modification']['class']
+            method_name = config_dict['business_modification']['method']
             
             business_module = importlib.import_module(module_name)
             cls = getattr(business_module, class_name)
