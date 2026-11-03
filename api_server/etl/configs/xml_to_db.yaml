@@ -15,7 +15,7 @@ extract: # Описывает этап извлечения данных
 
 load:
   format: jdbc
-  write_mode: overwrite
+  write_mode: append
   target_name: null
   show_rows_before_save: 10
   print_schema: true

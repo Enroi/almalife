@@ -50,9 +50,9 @@ services:
 
   postgres:
     restart: no
-    image: postgres:alpine
+    image: postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     env_file:
       - .env
     volumes:
@@ -69,7 +69,7 @@ services:
     working_dir: /app
     command: >
       sh -c "npm install -g prisma@7 && 
-      npx prisma studio --url='postgresql://${PG_DB_USER}:${PG_DB_PASS}@postgres:5432/almalife' --port=8089 --browser none"
+      npx prisma studio --url='postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/almalife' --port=8089 --browser none"
     ports:
       - "8089:80"
     depends_on:
