@@ -64,10 +64,26 @@ const config: Config = {
       },
       items: [
         {
-          type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
+          to: '/docs/intro',
           position: 'left',
-          label: 'Tutorial',
+          label: 'Краткое описание',
+        },
+        {
+          label: 'Быстрый запуск',
+          to: '/docs/tutorial',
+          position: 'left',
+        },
+        {
+          label: 'Конфигурации',
+          to: 'docs/configs'
+        },
+        {
+          label: 'Бизнес трансформации',
+          to: 'docs/business_transformations'
+        },
+        {
+          label: 'Связи с другими проектами',
+          to: 'docs/links_to_others'
         },
         {
           href: 'https://github.com/enroi/almalife',
@@ -79,24 +95,6 @@ const config: Config = {
     footer: {
       style: 'dark',
       links: [
-        {
-          title: 'Docs',
-          items: [
-            {
-              label: 'Tutorial',
-              to: '/docs/intro',
-            },
-          ],
-        },
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'GitHub',
-              href: 'https://github.com/Enroi/almalife',
-            },
-          ],
-        },
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Almalife. Создан с помощью Docusaurus.`,
     },
