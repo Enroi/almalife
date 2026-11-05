@@ -1,0 +1,8 @@
+{
+  "label": "Быстрый запуск",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Быстрый (5 минутный) запуск проекта Almalife ETL."
+  }
+}
