@@ -1,6 +1,12 @@
 import etl.transformer as T
 import sys
+import logging
 
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(module)s - %(funcName)s - %(thread)d - %(message)s',
+)
 
 if __name__ == '__main__':
 

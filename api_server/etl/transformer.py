@@ -6,12 +6,11 @@ import os
 import re
 from pyspark.sql import DataFrame, SparkSession, functions as F
 import importlib
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(module)s - %(funcName)s - %(thread)d - %(message)s',
-)
 
+_executor = ThreadPoolExecutor(max_workers=4)
 
 def replacer(match) -> str:
     var_name = match.group(1)
@@ -113,3 +112,7 @@ def transform(yaml_config: str) -> str:
     
     logging.info("finished work with config ")
     return "success"
+
+async def async_transform(yaml_config: str) -> str:
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(_executor, transform, yaml_config)
