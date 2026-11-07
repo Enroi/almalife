@@ -11,14 +11,16 @@ sidebar_position: 2
 ## Порядок установки и запуска
 
 1. Скопировать файл [.env-example](https://github.com/Enroi/almalife/blob/main/.env-example) в файл .env в корне проекта или рядом с файлом [file_tester.py](https://github.com/Enroi/almalife/blob/main/api_server/file_tester.py)
-1. В файле .env установить любой пароль в переменной POSTGRES_PASSWORD
+1. Файл .env-example скопировать с именем .env
+1. Файл .env-docker-example скопировать с именем .env-docker
+1. В файлах .env и .env-docker установить любой одинаковый пароль в переменной POSTGRES_PASSWORD
 1. В корне проекта запустить команду
 
     ```bash
     docker compose up -d
     ```
 
-1. Дождаться сообщения в log-ах
+1. Дождаться сообщения в log-ах запущенного приложения superset текста:
 
     ```code
     Running on http://127.0.0.1:8088
@@ -46,4 +48,10 @@ python .\file_tester.py .\etl\configs\xml_to_db.yaml
 ### Запуск трансформаций с помощью FastAPI сервера
 
 Almalife может работать в серверном режиме предоставляя REST API метод трансформации.\
-Для запуска 
+Для запуска трансформаций через FastAPI сервер в Docker необходимо:
+
+1. Открыть ссылку [FastAPI сервера](http://localhost:8090/docs#) запущенного в Docker
+1. В открывшемся окне "Swagger UI" выбрать метод /api/transform
+1. Нажать на "Try it out"
+1. Выбрать любой файл из раздела [конфигураций трансформации](https://github.com/Enroi/almalife/tree/main/api_server/etl/configs)
+1. Проверить результат в [UI Prisma Studio](http://localhost:8089/)
