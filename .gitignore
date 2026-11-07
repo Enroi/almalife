@@ -6,3 +6,4 @@ spark/hadoop-3.4.2.tar.gz
 /test_results
 .env
 !*-example
+/.env-docker

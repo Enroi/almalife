@@ -42,3 +42,8 @@ python .\file_tester.py .\etl\configs\xml_to_db.yaml
 ```
 
 В результате работы Almalife из файла [usd_currencies.xml](https://github.com/Enroi/almalife/blob/main/source_test_data/test_xmls/usd_currencies.xml) будет создана таблица базы данных usd_currencies которую можно посмотреть через UI Prisma по адресу [http://localhost:8089/#schema=public&table=usd_currencies&view=table](http://localhost:8089/#schema=public&table=usd_currencies&view=table)
+
+### Запуск трансформаций с помощью FastAPI сервера
+
+Almalife может работать в серверном режиме предоставляя REST API метод трансформации.\
+Для запуска 
