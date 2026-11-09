@@ -1,0 +1,34 @@
+{
+  "title": {
+    "message": "Almalife documentation",
+    "description": "The title in the navbar"
+  },
+  "logo.alt": {
+    "message": "Almalife logo",
+    "description": "The alt text of navbar logo"
+  },
+  "item.label.Краткое описание": {
+    "message": "Overview",
+    "description": "Navbar item with label Краткое описание"
+  },
+  "item.label.Быстрый запуск": {
+    "message": "Quick start",
+    "description": "Navbar item with label Быстрый запуск"
+  },
+  "item.label.Конфигурации": {
+    "message": "Configurations",
+    "description": "Navbar item with label Конфигурации"
+  },
+  "item.label.Бизнес трансформации": {
+    "message": "Business transformations",
+    "description": "Navbar item with label Бизнес трансформации"
+  },
+  "item.label.Связи с другими проектами": {
+    "message": "Links to other projects",
+    "description": "Navbar item with label Связи с другими проектами"
+  },
+  "item.label.GitHub": {
+    "message": "GitHub",
+    "description": "Navbar item with label GitHub"
+  }
+}

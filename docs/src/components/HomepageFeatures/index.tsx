@@ -2,6 +2,7 @@ import type {ReactNode} from 'react';
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
+import Translate, {translate} from '@docusaurus/Translate';
 
 type FeatureItem = {
   title: string;
@@ -12,34 +13,66 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Легкость в использовании',
+    title: translate({
+      id: 'homepage.features.easyOfUse.title',
+      message: 'Легкость в использовании',
+    }),
     image: require('@site/static/img/easy.jpeg').default,
     link: 'docs/tutorial',
     description: (
-      <>
+      <Translate id="homepage.features.easyOfUse.description">
         Не требует знаний в программировании для реализации базовых преобразований данных.
-      </>
+      </Translate>
     ),
   },
   {
-    title: 'Расширяемость',
+    title: translate({
+      id: 'homepage.features.extensibility.title',
+      message: 'Расширяемость',
+    }),
     image: require('@site/static/img/extension.jpeg').default,
     link: 'docs/business_transformations',
     description: (
-      <>
+      <Translate id="homepage.features.extensibility.description">
         При необходимости можно расширить этап трансформации данных кодом написанный на Python.
-      </>
+      </Translate>
     ),
   },
   {
-    title: 'Основан на Open-Source решениях',
+    title: translate({
+      id: 'homepage.features.openSource.title',
+      message: 'Основан на Open-Source решениях',
+    }),
     image: require('@site/static/img/open_source.jpeg').default,
     link: 'https://opensource.org/',
     description: (
-      <>
-        Ядро проекта создана на базе <a href="https://spark.apache.org/" target="_blank" rel="noopener">Apache Spark</a><br/>
-        В примере используются дополнительные решения <a href="https://www.postgresql.org/" target="_blank" rel="noopener noreferrer">PostgreSQL</a>, <a href="https://superset.apache.org/" target="_blank" rel="noopener noreferrer">Apache Superset</a>, <a href="https://www.prisma.io/" target="_blank" rel="noopener noreferrer">Prisma</a>
-      </>
+      <Translate
+        id="homepage.features.openSource.description"
+        values={{
+          spark: (
+            <a href="https://spark.apache.org/" target="_blank" rel="noopener">
+              Apache Spark
+            </a>
+          ),
+          postgresql: (
+            <a href="https://www.postgresql.org/" target="_blank" rel="noopener noreferrer">
+              PostgreSQL
+            </a>
+          ),
+          superset: (
+            <a href="https://superset.apache.org/" target="_blank" rel="noopener noreferrer">
+              Apache Superset
+            </a>
+          ),
+          prisma: (
+            <a href="https://www.prisma.io/" target="_blank" rel="noopener noreferrer">
+              Prisma
+            </a>
+          ),
+        }}
+      >
+        {'Ядро проекта создана на базе {spark}\nВ примере используются дополнительные решения {postgresql}, {superset}, {prisma}'}
+      </Translate>
     ),
   },
 ];

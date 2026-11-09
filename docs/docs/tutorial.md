@@ -11,7 +11,6 @@ sidebar_position: 2
 ## Порядок установки и запуска
 
 1. Скопировать файл [.env-example](https://github.com/Enroi/almalife/blob/main/.env-example) в файл .env в корне проекта или рядом с файлом [file_tester.py](https://github.com/Enroi/almalife/blob/main/api_server/file_tester.py)
-1. Файл .env-example скопировать с именем .env
 1. Файл .env-docker-example скопировать с именем .env-docker
 1. В файлах .env и .env-docker установить любой одинаковый пароль в переменной POSTGRES_PASSWORD
 1. В корне проекта запустить команду
