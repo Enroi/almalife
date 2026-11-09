@@ -5,8 +5,8 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'Almalife ETL документация',
-  tagline: `Документация проекта Almalife ETL (Extract Transform Loading). Работает на базе Apache Spark.`,
+  title: 'Almalife ETL documentation',
+  tagline: `Almalife ETL (Extract Transform Loading) documentation. The project core is built on Apache Spark.`,
   favicon: 'img/favicon.ico',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
