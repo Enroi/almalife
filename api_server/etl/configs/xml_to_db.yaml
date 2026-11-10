@@ -8,10 +8,6 @@ extract: # Описывает этап извлечения данных
     rowTag: Record
     show_loaded: 10
   print_schema: "true"
-  business_modification: 
-    module: "etl.business_methods.worker_module"
-    class: Worker
-    method: do_work
 
 load:
   format: jdbc
