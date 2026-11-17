@@ -16,5 +16,6 @@ FROM apache/spark:4.2.0-scala2.13-java25-python3-r-ubuntu
 # USER spark
 
 RUN wget -P /opt/spark/jars https://repo1.maven.org/maven2/org/postgresql/postgresql/42.7.10/postgresql-42.7.10.jar
+RUN wget -P /opt/spark/jars https://repo1.maven.org/maven2/dev/mauch/spark-excel_2.13/4.2.0_0.34.1-prerelease37/spark-excel_2.13-4.2.0_0.34.1-prerelease37.jar
 
 COPY spark-defaults.conf /opt/spark/conf/spark-defaults.conf

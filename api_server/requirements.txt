@@ -7,3 +7,5 @@ zstandard
 uvicorn
 fastapi[standard]
 python-dotenv
+openpyxl
+formualizer
