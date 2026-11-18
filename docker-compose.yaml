@@ -101,7 +101,7 @@ services:
       "
     volumes:
       - superset_home:/app/superset_home
-      - ./test_csvs:/opt/spark/work-dir/test_csvs/
+      - ./source_test_data/test_csvs:/opt/spark/work-dir/test_csvs/
 
   fast-api:
     build: api_server/.
