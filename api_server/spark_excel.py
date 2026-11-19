@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession, DataFrame, Column as SparkColumn, Window
-from pyspark.sql.functions import col, lit, row_number
+from pyspark.sql.functions import col, lit, row_number, when, sum
 import openpyxl as opl
 import openpyxl.worksheet.worksheet as oplws
 import formualizer as fz
@@ -47,20 +47,25 @@ def get_columns(sheet: oplws.Worksheet, source_name: str) -> defaultdict:
 
 def convert_raw_to_spark_column(ast: fz.ASTNode, 
                                 df: DataFrame, 
-                                excel_ranges_as_dfs: dict[str, DataFrame]
+                                excel_ranges_as_dfs: dict[str, DataFrame],
+                                original_columns: list[str],
+                                already_joined_data_frames: set[str],
                                 ) -> tuple[SparkColumn | None, DataFrame] :
     node_type = ast.node_type()
     match node_type:
         case'BinaryOp':
             node_operator = ast.get_operator()
             if node_operator is not None:
-                left = convert_raw_to_spark_column(ast.children()[0], df, excel_ranges_as_dfs)
-                right = convert_raw_to_spark_column(ast.children()[1], df, excel_ranges_as_dfs)
+                left, df = convert_raw_to_spark_column(ast.children()[0], df, excel_ranges_as_dfs, original_columns, already_joined_data_frames)
+                right, df = convert_raw_to_spark_column(ast.children()[1], df, excel_ranges_as_dfs, original_columns, already_joined_data_frames)
                 match node_operator: 
                     case '+': result_formula = lit(left) + lit(right)
                     case '-': result_formula = lit(left) - lit(right)
                     case '/': result_formula = lit(left) / lit(right)
                     case '*': result_formula = lit(left) * lit(right)
+                    case '>': result_formula = lit(left) > lit(right)
+                    case '<': result_formula = lit(left) < lit(right)
+                    case '=': result_formula = lit(left) == lit(right)
                     case _: result_formula = None
                 return result_formula, df
         case 'Literal':
@@ -70,32 +75,83 @@ def convert_raw_to_spark_column(ast: fz.ASTNode,
             match rf:
                 case fz.CellRef():
                     c = rf.col # type: ignore
-                    return col(df.columns[c - 1]), df
+                    return col(original_columns[c - 1]), df
                 case fz.TableRef():
                     linked_df_name = rf.name
                     if linked_df_name is not None:
-                        linked_df = excel_ranges_as_dfs[linked_df_name]
                         spec = rf.spec
                         if spec is not None:
                             cols_spec_list: list[str] = spec.split(",")
                             if len(cols_spec_list) == 2 and cols_spec_list[0] == '[@]':
                                 matches = re.search(r'\[(.+)\]', cols_spec_list[1])
                                 if matches is not None and len(matches.groups()) == 1:
+                                    linked_df = excel_ranges_as_dfs[linked_df_name]
+                                    if linked_df_name not in already_joined_data_frames:
+                                        df = df.join(linked_df, on=SYNTHETIC_COLUMN_NAME, how="left")
+                                        already_joined_data_frames.add(linked_df_name)
                                     join_column_name = matches[1]
-                                    df = df.join(linked_df, on=SYNTHETIC_COLUMN_NAME, how="left")
                                     return col(join_column_name), df
+        case 'Function':
+            match ast.get_function_name():
+                case 'IF':
+                    column_if, df = convert_raw_to_spark_column(ast.children()[0], df, excel_ranges_as_dfs, original_columns)
+                    column_true, df = convert_raw_to_spark_column(ast.children()[1], df, excel_ranges_as_dfs, original_columns)
+                    result_column = when(column_if, column_true) # type: ignore
+                    if len(ast.children()) == 3:
+                        column_false, df = convert_raw_to_spark_column(ast.children()[2], df, excel_ranges_as_dfs, original_columns)
+                        result_column = result_column.otherwise(column_false)
+                    return result_column, df
+                case 'SUMIF':
+                    children = ast.children()
+                    filter_range = children[0]
+                    criteria = children[1]
+                    sum_range = filter_range
+                    if len(children) == 3:
+                        sum_range = children[2]
+                    if filter_range.node_type() == 'Reference':
+                        rf = filter_range.get_reference()
+                        match rf:
+                            case fz.TableRef():
+                                spec = rf.spec
+                                if spec is not None:
+                                    cols_spec_list: list[str] = spec.split(",")
+                                    if len(cols_spec_list) == 1:
+                                        ref_column_name = cols_spec_list[0]
+                                        sum_column_name = ref_column_name
+                                        if sum_range != filter_range:
+                                            sum_column_name = (sum_range.get_reference()
+                                                               .spec # type: ignore
+                                                               .split(",")[0] # type: ignore
+                                                               ) # type: ignore
+                                        df_name = rf.name
+                                        linked_df = excel_ranges_as_dfs[df_name]
+                                        criteria_column_outer, df = convert_raw_to_spark_column(criteria, df, excel_ranges_as_dfs, original_columns, already_joined_data_frames)
+                                        if criteria_column_outer is not None:
+                                            result_column = (linked_df.alias(df_name)
+                                                            .where(criteria_column_outer.outer() == col(ref_column_name))
+                                                            .select(sum(sum_column_name))
+                                                            .scalar()
+                                                            )
+                                            return result_column, df
+                            case _:
+                                logging.info(f"Reference type {rf} is not supported")
+                case _:
+                    logging.warning(f"Unknown function: {ast.get_function_name()}")
     return None, df
 
 
-def add_column(raw_excel_column: RawExcelColumn, df: DataFrame, excel_ranges_as_dfs: dict[str, DataFrame]) -> DataFrame:
+def add_column(raw_excel_column: RawExcelColumn, 
+               df: DataFrame, 
+               excel_ranges_as_dfs: dict[str, DataFrame],
+               original_columns: list[str],
+               ) -> DataFrame:
     if raw_excel_column.ast is not None:
         ast: fz.ASTNode = raw_excel_column.ast
-        spark_column, df = convert_raw_to_spark_column(ast, df, excel_ranges_as_dfs)
+        already_joined_data_frames: set[str] = set()
+        spark_column, df = convert_raw_to_spark_column(ast, df, excel_ranges_as_dfs, original_columns, already_joined_data_frames)
         spark_column: SparkColumn | None
-        
         if spark_column is not None:
             df = df.withColumn(raw_excel_column.name, spark_column)
-            
     return df
 
 
@@ -121,6 +177,7 @@ def get_named_ranges_dfs(workbook, file_path, spark: SparkSession):
                 .option("dataAddress", data_address)
                 .load(file_path))
             df = add_synthetic_column(df)
+            print(f"Table {table_name}:")
             df.show()
             result_dict[table_name] = df
     return result_dict
@@ -143,8 +200,9 @@ def do_work(file_path: str, sheet_name: str):
     df = add_synthetic_column(df)
 
     for column in columns_dict[sheet_name]:
-        df = add_column(column, df, excel_ranges_as_dfs)
+        df = add_column(column, df, excel_ranges_as_dfs, df.columns)
 
+    print("Result:")
     df.show()
     df.printSchema()
 
